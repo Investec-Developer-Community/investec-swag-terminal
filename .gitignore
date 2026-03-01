@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env
+*.db
+*.db-journal
+*.db-wal
+data/
+bin/
+.DS_Store
+packages/ssh/bin/
+packages/api/data/
+packages/api/drizzle/

@@ -1,0 +1,31 @@
+{
+  "name": "@investec-swag/api",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "bun --hot src/index.ts",
+    "build": "bun build src/index.ts --outdir dist --target bun",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:generate": "drizzle-kit generate",
+    "db:seed": "bun src/db/seed.ts"
+  },
+  "dependencies": {
+    "@paralleldrive/cuid2": "^2.2.2",
+    "drizzle-orm": "^0.38.0",
+    "hono": "^4.6.0",
+    "zod": "^3.23.0",
+    "jsonwebtoken": "^9.0.0",
+    "bcryptjs": "^2.4.3"
+  },
+  "devDependencies": {
+    "better-sqlite3": "^11.7.0",
+    "@types/better-sqlite3": "^7.6.0",
+    "@types/jsonwebtoken": "^9.0.0",
+    "@types/bcryptjs": "^2.4.0",
+    "drizzle-kit": "^0.30.0",
+    "typescript": "^5.6.0"
+  }
+}

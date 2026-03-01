@@ -1,0 +1,23 @@
+{
+  "name": "investec-swag-ssh",
+  "private": true,
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "dev": "concurrently \"bun run dev:api\" \"bun run dev:admin\"",
+    "dev:api": "cd packages/api && bun run dev",
+    "dev:admin": "cd packages/admin && bun run dev",
+    "dev:ssh": "cd packages/ssh && go run ./cmd/ssh/main.go",
+    "build": "bun run build:api && bun run build:admin",
+    "build:api": "cd packages/api && bun run build",
+    "build:admin": "cd packages/admin && bun run build",
+    "build:ssh": "cd packages/ssh && go build -o bin/ssh-server ./cmd/ssh/main.go",
+    "db:push": "cd packages/api && bunx drizzle-kit push",
+    "db:studio": "cd packages/api && bunx drizzle-kit studio",
+    "db:seed": "cd packages/api && bun src/db/seed.ts",
+    "typecheck": "cd packages/api && bun run typecheck && cd ../admin && bun run typecheck",
+    "test": "cd packages/api && bun run test"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}
