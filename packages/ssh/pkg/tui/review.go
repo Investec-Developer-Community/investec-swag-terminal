@@ -100,7 +100,11 @@ func (m Model) reviewUpdate(msg tea.Msg) (Model, tea.Cmd) {
 			switch m.reviewSelection {
 			case reviewSubmit:
 				m.page = submittingPage
-				return m, m.submitRequest()
+				m.spinnerFrame = 0
+				m.submitProgress = 0
+				m.submitDone = false
+				m.submitSuccess = false
+				return m, tea.Batch(m.submitRequest(), spinnerTick(), progressStep())
 			case reviewEdit:
 				m.page = formPage
 				m.initForm()

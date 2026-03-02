@@ -83,6 +83,12 @@ type Model struct {
 	// Easter egg
 	konamiBuf    []string
 	rickLyricIdx int
+
+	// Submission animation
+	spinnerFrame   int
+	submitProgress int
+	submitDone     bool
+	submitSuccess  bool
 }
 
 // NewModel creates the initial TUI model.
@@ -115,12 +121,41 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	// API response messages
 	case submitSuccessMsg:
 		m.requestID = msg.id
-		m.page = confirmPage
-		return m, nil
+		m.submitDone = true
+		m.submitSuccess = true
+		return m, transitionDelay()
 
 	case submitErrorMsg:
 		m.submitError = msg.err
-		m.page = errorPage
+		m.submitDone = true
+		m.submitSuccess = false
+		return m, transitionDelay()
+
+	// Submission animation ticks
+	case spinnerTickMsg:
+		if m.page == submittingPage {
+			m.spinnerFrame = (m.spinnerFrame + 1) % len(spinnerFrames)
+			return m, spinnerTick()
+		}
+		return m, nil
+
+	case progressStepMsg:
+		if m.page == submittingPage && !m.submitDone {
+			if m.submitProgress < len(submitSteps)-1 {
+				m.submitProgress++
+				return m, progressStep()
+			}
+		}
+		return m, nil
+
+	case transitionDoneMsg:
+		if m.page == submittingPage && m.submitDone {
+			if m.submitSuccess {
+				m.page = confirmPage
+			} else {
+				m.page = errorPage
+			}
+		}
 		return m, nil
 	}
 
@@ -188,7 +223,11 @@ func (m Model) errorUpdate(msg tea.Msg) (Model, tea.Cmd) {
 		switch msg.String() {
 		case "enter":
 			m.page = submittingPage
-			return m, m.submitRequest()
+			m.spinnerFrame = 0
+			m.submitProgress = 0
+			m.submitDone = false
+			m.submitSuccess = false
+			return m, tea.Batch(m.submitRequest(), spinnerTick(), progressStep())
 		case "esc":
 			m.page = reviewPage
 		case "q", "ctrl+c":

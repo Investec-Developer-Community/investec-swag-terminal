@@ -180,6 +180,10 @@ func (m Model) formView() string {
 	// Form content
 	formContent := m.form.View()
 
+	// Progress bar
+	step := extractFormStep(formContent)
+	progressBar := m.renderFormProgress(step)
+
 	// Wrap in a styled container
 	container := lipgloss.NewStyle().
 		Width(min(width-4, 60)).
@@ -189,6 +193,8 @@ func (m Model) formView() string {
 		"",
 		header,
 		headerLine,
+		"",
+		progressBar,
 		"",
 		formContent,
 		"",

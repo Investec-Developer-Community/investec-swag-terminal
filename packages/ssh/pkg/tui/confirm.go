@@ -76,14 +76,37 @@ func (m Model) submittingView() string {
 		width = 80
 	}
 
-	spinner := m.theme.TextHighlight().Render("⣾ ")
-	msg := m.theme.TextAccent().Render("Submitting request…")
+	var icon, msg, detail string
+
+	if m.submitDone {
+		// Brief result flash before transition
+		if m.submitSuccess {
+			icon = m.theme.TextSuccess().Bold(true).Render("  ✓  ")
+			msg = m.theme.TextAccent().Bold(true).Render("Request Submitted")
+		} else {
+			icon = m.theme.TextError().Bold(true).Render("  ✗  ")
+			msg = m.theme.TextAccent().Bold(true).Render("Submission Failed")
+		}
+		detail = ""
+	} else {
+		// Animated spinner + progress steps
+		frame := spinnerFrames[m.spinnerFrame%len(spinnerFrames)]
+		icon = m.theme.TextHighlight().Render("  " + frame + "  ")
+		step := submitSteps[m.submitProgress]
+		msg = m.theme.TextAccent().Render(step)
+		detail = m.theme.TextMuted().Render(
+			fmt.Sprintf("  %d/%d", m.submitProgress+1, len(submitSteps)))
+	}
+
+	bar := m.renderSubmitProgress()
 
 	content := lipgloss.JoinVertical(lipgloss.Center,
 		"",
 		"",
 		"",
-		spinner+msg,
+		icon+msg,
+		"",
+		bar+detail,
 		"",
 	)
 
@@ -167,6 +190,7 @@ func (m Model) confirmUpdate(msg tea.Msg) (Model, tea.Cmd) {
 				m.confirmSelection = 0
 				m.page = formPage
 				m.initForm()
+				return m, m.form.Init()
 			case confirmExit:
 				return m, tea.Quit
 			}
