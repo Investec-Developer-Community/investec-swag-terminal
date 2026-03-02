@@ -20,17 +20,22 @@ The API serves as the shared backend for both the SSH terminal client and the ad
 ```
 Request Body (JSON):
 {
-  "fullName": "Sipho Mabena",
-  "email": "sipho@example.com",
+  "fullName": "Ada Lovelace",
+  "email": "ada@example.com",
   "phone": "+27821234567",
   "shirtSize": "L",
   "note": "I built 3 apps on the Investec API this year!",
+  "streetAddress": "123 Bob's St E",
+  "company": "Recursive Solutions - Sandton, Sandton Office Park",  // optional
+  "city": "Woodmead, Sandton",
+  "province": "Gauteng",
+  "postcode": "2191",
   "fingerprint": "abc123..."   // optional, from SSH key
 }
 
 Response 201:
 {
-  "id": "uuid-here",
+  "id": "cuid2-here",
   "status": "pending",
   "createdAt": "2026-03-01T12:00:00Z",
   "message": "Your swag request has been submitted!"
@@ -41,7 +46,7 @@ Errors:
   429 — Rate limit exceeded
 ```
 
-#### `GET /api/requests` — List all requests (admin)
+#### `GET /api/admin/requests` — List all requests (admin)
 ```
 Query Params:
   ?status=pending|approved|denied|waitlisted
@@ -63,19 +68,24 @@ Response 200:
 }
 ```
 
-#### `GET /api/requests/:id` — Get single request (admin)
+#### `GET /api/admin/requests/:id` — Get single request (admin)
 ```
 Headers:
   Authorization: Bearer <admin-token>
 
 Response 200:
 {
-  "id": "uuid",
+  "id": "cuid2",
   "fullName": "Sipho Mabena",
   "email": "sipho@example.com",
   "phone": "+27821234567",
   "shirtSize": "L",
   "note": "I built 3 apps on the Investec API this year!",
+  "streetAddress": "19B Morris St E",
+  "company": "CoreSync - Woodmead Willows Office Park",
+  "city": "Woodmead, Sandton",
+  "province": "Gauteng",
+  "postcode": "2191",
   "status": "pending",
   "adminReason": null,
   "reviewedBy": null,
@@ -87,7 +97,7 @@ Response 200:
 }
 ```
 
-#### `PATCH /api/requests/:id/status` — Update request status (admin)
+#### `PATCH /api/admin/requests/:id/status` — Update request status (admin)
 ```
 Headers:
   Authorization: Bearer <admin-token>
@@ -110,7 +120,7 @@ Response 200:
 
 ### 2.2 Stats
 
-#### `GET /api/stats` — Dashboard statistics (admin)
+#### `GET /api/admin/stats` — Dashboard statistics (admin)
 ```
 Headers:
   Authorization: Bearer <admin-token>
@@ -132,7 +142,7 @@ Response 200:
 
 ### 2.3 Export
 
-#### `GET /api/requests/export` — CSV export (admin)
+#### `GET /api/admin/requests/export` — CSV export (admin)
 ```
 Headers:
   Authorization: Bearer <admin-token>
@@ -181,6 +191,11 @@ export const swagRequests = sqliteTable("swag_requests", {
   phone: text("phone").notNull(),
   shirtSize: text("shirt_size", { enum: shirtSizes }).notNull(),
   note: text("note").notNull(),
+  streetAddress: text("street_address").notNull(),
+  company: text("company"),
+  city: text("city").notNull(),
+  province: text("province", { enum: saProvinces }).notNull(),
+  postcode: text("postcode").notNull(),
   status: text("status", { enum: requestStatuses }).notNull().default("pending"),
   adminReason: text("admin_reason"),
   reviewedBy: text("reviewed_by"),
@@ -215,9 +230,14 @@ export const RequestStatus = z.enum(["pending", "approved", "denied", "waitliste
 export const CreateSwagRequest = z.object({
   fullName: z.string().min(2, "Name must be at least 2 characters").max(100),
   email: z.string().email("Invalid email address"),
-  phone: z.string().regex(/^\+?[\d\s-]{7,15}$/, "Invalid phone number"),
+  phone: z.string().regex(/^\+?[\d\s\-()]{7,15}$/, "Invalid phone number"),
   shirtSize: ShirtSize,
   note: z.string().min(10, "Tell us more! At least 10 characters").max(500),
+  streetAddress: z.string().min(3, "Street address is required").max(200),
+  company: z.string().max(200).optional(),
+  city: z.string().min(2, "City is required").max(100),
+  province: Province,
+  postcode: z.string().regex(/^\d{4}$/, "Postcode must be a 4-digit SA postal code"),
   fingerprint: z.string().optional(),
 });
 

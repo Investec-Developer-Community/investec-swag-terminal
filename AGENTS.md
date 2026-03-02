@@ -4,7 +4,7 @@
 
 - `/packages/api/`: Hono.js API backend (Bun runtime, bun:sqlite)
 - `/packages/ssh/`: Go SSH server with Bubble Tea TUI
-- `/packages/admin/`: React admin dashboard (Vite + Tailwind)
+- `/packages/admin/`: React admin dashboard (Vite + Tailwind, dark mode)
 - `/specs/`: Product and technical specifications
 
 ## Build & Test Commands
@@ -31,3 +31,11 @@
 - **Database**: Drizzle ORM with `bun:sqlite` driver (not `better-sqlite3`)
 - **API Routing**: Public routes at `/api/requests`, admin routes at `/api/admin/*` (JWT protected)
 - **Environment**: Copy `.env.example` to `.env` for local config
+
+## SSH TUI Architecture
+
+- **Pages**: splash → form (9 steps) → review → submitting (animated) → confirm/error → rickroll (easter egg)
+- **Progress system** (`progress.go`): Segmented form tracker, animated braille spinner, multi-stage submission bar, transition delays
+- **Theme** (`theme/investec.go`): 95/5 colour rule — Navy/Stone/Sky core (95%), Teal/Burgundy accent (5%)
+- **Data**: Form collects personal info + full SA delivery address (street, company, city, province, postcode)
+

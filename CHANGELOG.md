@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.1.6] — 2026-03-02
+
+### Added
+
+- **Form progress bar**: Segmented `━━━` / `───` tracker showing step X/9, auto-detected from huh form output
+- **Animated submission sequence**: 4-stage progress with animated braille spinner (80ms cycle) — "Encrypting payload" → "Connecting to Investec" → "Transmitting request" → "Awaiting confirmation"
+- **Submission progress bar**: Fills to ~85% during stages, then 100% in teal (success) or burgundy (error)
+- **Success/error transition**: 1.2s delay after API response to flash result state (✓/✗) before advancing to confirm/error screen
+- **New file `progress.go`**: Houses all progress bar, spinner, and transition logic
+
+### Changed
+
+- **`submittingView()`**: Rewritten from static spinner to fully animated multi-stage view
+- **Submit entry points** (review.go `reviewSubmit`, root.go `errorUpdate` retry): Now fire `tea.Batch` with API call + spinner tick + progress step
+- **`confirmAnother`**: Now properly calls `m.form.Init()` when resetting to form page
+- **Updated all documentation** to reflect delivery address fields, 95/5 brand palette, progress system, and current file structure
+
 ## [0.1.5] — 2026-03-01
 
 ### Added

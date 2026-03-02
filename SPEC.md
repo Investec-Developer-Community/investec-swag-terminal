@@ -34,18 +34,23 @@ An SSH-based interactive terminal experience for the **Investec Developer Commun
 │  2. Splash screen with Investec ASCII art & welcome msg      │
 │     ↓                                                        │
 │  3. "Request Swag" form (guided, field-by-field):            │
-│     • Full Name                                              │
-│     • Email Address                                          │
-│     • Phone Number                                           │
-│     • Shirt Size (XS / S / M / L / XL / XXL)                │
-│     • Note: "Tell us why you deserve some swag!" (textarea)  │
+│     • Full Name                           (Step 1 of 9)      │
+│     • Email Address                       (Step 2 of 9)      │
+│     • Phone Number                        (Step 3 of 9)      │
+│     • Shirt Size (XS / S / M / L / XL / XXL) (Step 4 of 9)  │
+│     • Note: "Tell us why you deserve swag!"  (Step 5 of 9)   │
+│     • Street Address                      (Step 6 of 9)      │
+│     • Company / Office (optional)         (Step 7 of 9)      │
+│     • City + Province (SA)                (Step 8 of 9)      │
+│     • Postcode (4-digit SA)               (Step 9 of 9)      │
 │     ↓                                                        │
 │  4. Review & Confirm screen (shows all entered info)         │
 │     ↓                                                        │
-│  5. Submission confirmation with a fun message               │
-│     "🎉 Your request is in! We'll be in touch."              │
+│  5. Animated submission sequence with progress bar            │
 │     ↓                                                        │
-│  6. Option to submit another request or exit                 │
+│  6. Success / Error confirmation screen                       │
+│     ↓                                                        │
+│  7. Option to submit another request or exit                 │
 │                                                              │
 └──────────────────────────────────────────────────────────────┘
 ```
@@ -92,8 +97,8 @@ An SSH-based interactive terminal experience for the **Investec Developer Commun
 | T-007 | Submit & Confirm                 | P0       | POST to API, show success/error message                     |
 | T-008 | Input Validation                 | P0       | Email format, required fields, phone format                 |
 | T-009 | SSH Fingerprint Capture          | P1       | Track SSH public key fingerprint for deduplication          |
-| T-010 | Theming (Investec brand colors)  | P1       | Dark background, Investec blue (#003D6A) accents            |
-| T-011 | Fun animations/transitions       | P2       | Typing effects, progress dots, emoji celebration            |
+| T-010 | Theming (Investec brand colors)  | P1       | 95/5 palette: Navy/Stone/Sky core, Teal accent              |
+| T-011 | Progress bar & transitions       | P1       | Segmented form tracker, animated submission, success flash   |
 
 ### 4.2 API Backend (MVP)
 
@@ -130,12 +135,17 @@ An SSH-based interactive terminal experience for the **Investec Developer Commun
 
 | Field         | Type      | Required | Description                                    |
 |---------------|-----------|----------|------------------------------------------------|
-| id            | UUID      | auto     | Primary key                                    |
+| id            | CUID2     | auto     | Primary key                                    |
 | fullName      | string    | yes      | Requester's full name                          |
 | email         | string    | yes      | Requester's email address                      |
 | phone         | string    | yes      | Requester's phone number                       |
 | shirtSize     | enum      | yes      | XS, S, M, L, XL, XXL                          |
 | note          | text      | yes      | Why they should receive swag                   |
+| streetAddress | string    | yes      | Delivery street address                        |
+| company       | string    | no       | Company / office / complex name                |
+| city          | string    | yes      | Town or city                                   |
+| province      | enum      | yes      | SA province (9 provinces)                      |
+| postcode      | string    | yes      | 4-digit SA postal code                         |
 | status        | enum      | auto     | pending, approved, denied, waitlisted          |
 | adminReason   | text      | no       | Admin's reason for deny/waitlist               |
 | reviewedBy    | string    | no       | Admin who reviewed                             |
@@ -202,13 +212,20 @@ An SSH-based interactive terminal experience for the **Investec Developer Commun
 
 | Element        | Value                                                    |
 |----------------|----------------------------------------------------------|
-| Primary Color  | Investec Blue `#003D6A`                                  |
-| Accent Color   | Investec Teal `#00A5B5`                                  |
-| Highlight      | Gold/Amber `#D4A843` (for CTAs and success states)       |
-| Background     | Deep Navy `#001B2E` (terminal) / White (admin web)       |
+| Navy 900       | `#0F2030` — Canvas / background                         |
+| Navy 800       | `#172D45` — Surface / cards                              |
+| Navy 700       | `#1E3A5F` — Borders / dividers                           |
+| Navy 500       | `#3D6B8E` — Muted / dim text                             |
+| Navy 300       | `#6B9FC9` — Brand blue (ASCII art, headings)             |
+| Stone          | `#B8AFA6` — Secondary text / labels                      |
+| Sky 300        | `#7DD3FC` — Meta / info text                              |
+| White          | `#FFFFFF` — Primary text                                  |
+| Teal           | `#00A5B5` — Interaction accent (5%) — CTAs, progress     |
+| Burgundy       | `#8B3A5E` — Error accent (5%) — errors, deny             |
 | Font (TUI)     | Monospace (terminal default)                             |
 | Font (Web)     | Inter / System sans-serif                                |
 | Tone           | Professional but approachable, developer-friendly        |
+| Colour Rule    | 95% core palette (Navy, Stone, Sky, White), 5% accent    |
 
 ---
 

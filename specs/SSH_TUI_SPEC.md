@@ -28,8 +28,10 @@ SSH Connect
 │   ║  ╚═╝╚═╝  ╚═══╝  ╚═══╝      ║      │
 │   ╚═══════════════════════════════╝      │
 │                                         │
-│   Welcome to the Investec Developer     │
-│   Swag Portal! 🎁                       │
+│   Developer Swag Provisioning Terminal  │
+│                                         │
+│   Initiate a request for Investec       │
+│   developer swag.                       │
 │                                         │
 │   Press ENTER to request swag           │
 │   Press 'q' to quit                     │
@@ -40,7 +42,7 @@ SSH Connect
 ┌─────────────────────────────────────────┐
 │          FORM: Full Name                │
 │                                         │
-│   Step 1 of 5                           │
+│   Step 1 of 9                           │
 │                                         │
 │   What's your full name?                │
 │   ┌─────────────────────────────┐       │
@@ -55,7 +57,7 @@ SSH Connect
 ┌─────────────────────────────────────────┐
 │          FORM: Shirt Size               │
 │                                         │
-│   Step 4 of 5                           │
+│   Step 4 of 9                           │
 │                                         │
 │   Pick your shirt size:                 │
 │                                         │
@@ -71,7 +73,7 @@ SSH Connect
 ┌─────────────────────────────────────────┐
 │          FORM: Note                     │
 │                                         │
-│   Step 5 of 5                           │
+│   Step 5 of 9                           │
 │                                         │
 │   Tell us why you deserve some swag!    │
 │   ┌─────────────────────────────┐       │
@@ -98,7 +100,7 @@ SSH Connect
 │   │        the API this year... │       │
 │   └─────────────────────────────┘       │
 │                                         │
-│   ☉ Submit Request                      │
+│   > Submit Request                      │
 │     Edit Details                        │
 │     Cancel                              │
 │                                         │
@@ -109,8 +111,7 @@ SSH Connect
 │          CONFIRMATION                   │
 │                                         │
 │   ╔═════════════════════════════╗        │
-│   ║                             ║        │
-│   ║   🎉 You're in the queue!  ║        │
+│   ║   Request Queued          ║        │
 │   ║                             ║        │
 │   ║   We've received your swag  ║        │
 │   ║   request. The team will    ║        │
@@ -120,7 +121,7 @@ SSH Connect
 │   ║                             ║        │
 │   ╚═════════════════════════════╝        │
 │                                         │
-│   ☉ Submit another request              │
+│   > Submit another request              │
 │     Exit                                │
 │                                         │
 └─────────────────────────────────────────┘
@@ -135,50 +136,70 @@ SSH Connect
 ```go
 const (
     splashPage page = iota    // Welcome screen with ASCII art
-    formPage                  // Multi-step form (name, email, phone, size, note)
+    formPage                  // Multi-step form (9 fields including delivery address)
     reviewPage                // Review all entered data
-    submittingPage            // Loading state while POST-ing
+    submittingPage            // Animated progress (spinner + stages) while POST-ing
     confirmPage               // Success confirmation
     errorPage                 // Error display with retry
+    rickrollPage              // Easter egg 🤫
 )
 ```
 
 ### 3.2 Model Structure
 
 ```go
-type model struct {
-    // App state
-    ready           bool
-    page            page
+type Model struct {
+    // Display
     renderer        *lipgloss.Renderer
-    theme           Theme
-
-    // Terminal info
+    theme           theme.Theme
     width           int
     height          int
+
+    // Navigation
+    page            page
+
+    // SSH / identity
     fingerprint     string
-    ipAddress       string
+
+    // API
+    apiClient       *api.Client
 
     // Form state
-    formStep        int           // 0-4 (name, email, phone, size, note)
     form            *huh.Form     // Charmbracelet Huh form
-    formData        SwagRequest   // Collected form data
+    formData        SwagFormData  // Collected form data
 
-    // Submission
-    submitting      bool
+    // Review screen
+    reviewSelection reviewOption
+
+    // Confirmation screen
+    confirmSelection confirmOption
+    requestID        string
+
+    // Error
     submitError     error
-    requestID       string
 
-    // UI components
-    spinner         spinner.Model
+    // Easter egg
+    konamiBuf       []string
+    rickLyricIdx    int
+
+    // Submission animation
+    spinnerFrame    int
+    submitProgress  int
+    submitDone      bool
+    submitSuccess   bool
 }
 
-type SwagRequest struct {
-    FullName    string
-    Email       string
-    Phone       string
-    ShirtSize   string
-    Note        string
+type SwagFormData struct {
+    FullName      string
+    Email         string
+    Phone         string
+    ShirtSize     string
+    Note          string
+    StreetAddress string
+    Company       string
+    City          string
+    Province      string
+    Postcode      string
 }
 ```
 
@@ -199,20 +220,26 @@ type SwagRequest struct {
 
 ## 4. Theming (Investec Brand)
 
+The theme follows a 95/5 colour discipline:
+- **95% core**: Navy (900-300), Stone, Sky 300, White
+- **5% accent**: Teal (interactions, success), Burgundy (errors)
+
 ```go
 // pkg/tui/theme/investec.go
 
 func InvestecTheme(renderer *lipgloss.Renderer) Theme {
     return Theme{
         renderer:   renderer,
-        background: lipgloss.Color("#001B2E"),  // Deep navy
-        border:     lipgloss.Color("#004A7C"),  // Mid blue
-        body:       lipgloss.Color("#8FAFC1"),  // Light blue-grey
-        accent:     lipgloss.Color("#FFFFFF"),  // White text
-        brand:      lipgloss.Color("#003D6A"),  // Investec Blue
-        highlight:  lipgloss.Color("#00A5B5"),  // Investec Teal
-        success:    lipgloss.Color("#D4A843"),  // Gold
-        error:      lipgloss.Color("#E85D5D"),  // Red
+        background: lipgloss.Color("#0F2030"),  // Navy 900 — canvas
+        border:     lipgloss.Color("#1E3A5F"),  // Navy 700 — dividers
+        body:       lipgloss.Color("#B8AFA6"),  // Stone — secondary text
+        accent:     lipgloss.Color("#FFFFFF"),  // White — primary text
+        brand:      lipgloss.Color("#6B9FC9"),  // Navy 300 — ASCII art
+        highlight:  lipgloss.Color("#00A5B5"),  // Teal — interaction cues
+        success:    lipgloss.Color("#00A5B5"),  // Teal — progress/success
+        errorColor: lipgloss.Color("#8B3A5E"),  // Burgundy — errors
+        sky:        lipgloss.Color("#7DD3FC"),  // Sky 300 — meta text
+        muted:      lipgloss.Color("#3D6B8E"),  // Navy 500 — dim text
     }
 }
 ```
@@ -293,6 +320,11 @@ func main() {
 | phone     | Required, 7-15 digits (with optional + prefix)         |
 | shirtSize | Required, must be one of: XS, S, M, L, XL, XXL         |
 | note      | Required, 10-500 chars                                  |
+| streetAddress | Required, 3-200 chars                               |
+| company   | Optional, max 200 chars                                 |
+| city      | Required, 2-100 chars                                   |
+| province  | Required, one of 9 SA provinces                         |
+| postcode  | Required, 4-digit numeric SA postal code                |
 
 Validation errors displayed inline below each field in error color.
 
@@ -310,15 +342,14 @@ packages/ssh/
 │   │   └── client.go        # API client for backend
 │   └── tui/
 │       ├── root.go           # Main model, Init, Update, View
-│       ├── splash.go         # Splash screen
-│       ├── form.go           # Multi-step form
+│       ├── splash.go         # Splash screen + ASCII art
+│       ├── form.go           # Multi-step form (9 steps)
 │       ├── review.go         # Review screen
-│       ├── confirm.go        # Confirmation screen
-│       ├── error.go          # Error display
-│       ├── styles.go         # Shared style helpers
-│       ├── keys.go           # Key bindings
+│       ├── confirm.go        # Confirmation + submitting + error screens
+│       ├── progress.go       # Progress bars, spinner, transitions
+│       ├── rickroll.go       # Easter egg (Konami code)
 │       └── theme/
-│           └── investec.go   # Investec brand theme
+│           └── investec.go   # Investec 95/5 brand theme
 ├── go.mod
 └── go.sum
 ```

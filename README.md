@@ -48,7 +48,7 @@ Simple. Fast. Slightly over-engineered.
 | **REST API** | Backend for both interfaces | Hono.js on Bun |
 | **Admin Dashboard** | Web UI for reviewing requests | React + Tailwind |
 
-A developer SSHs in, fills out a quick form (name, email, phone, shirt size, and why they deserve swag), and submits. The Investec DevRel team sees the request on the admin dashboard and can approve, deny, or waitlist it — with one-click copy for fulfilment.
+A developer SSHs in, fills out a quick form (name, email, phone, shirt size, why they deserve swag, and a full SA delivery address), and submits. A segmented progress bar tracks form completion, and an animated submission sequence gives visual feedback. The Investec DevRel team sees the request on the admin dashboard and can approve, deny, or waitlist it — with one-click copy for fulfilment.
 
 ---
 
@@ -112,11 +112,13 @@ investec-swag-ssh/
 │   │   │   └── tui/
 │   │   │       ├── root.go    # Main model (Init/Update/View)
 │   │   │       ├── splash.go  # Splash screen + ASCII art
-│   │   │       ├── form.go    # Multi-step swag form
+│   │   │       ├── form.go    # Multi-step swag form (9 steps)
 │   │   │       ├── review.go  # Review before submit
 │   │   │       ├── confirm.go # Success & error screens
+│   │   │       ├── progress.go # Progress bar + submission animation
+│   │   │       ├── rickroll.go # Easter egg 🤫
 │   │   │       └── theme/
-│   │   │           └── investec.go  # Brand colors
+│   │   │           └── investec.go  # Brand colors (95/5 palette)
 │   │   ├── go.mod
 │   │   └── Makefile
 │   └── admin/                 # React admin dashboard

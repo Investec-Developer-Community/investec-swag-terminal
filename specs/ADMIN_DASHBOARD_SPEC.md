@@ -60,6 +60,13 @@ A React-based single-page application for the Investec DevRel team to manage swa
 │   API this year and spoke at the    │
 │   community meetup in JHB!"         │
 │                                      │
+│  ── Delivery Address ──              │
+│  Address: 19B Morris St E            │
+│  Company: CoreSync - Woodmead       │
+│  City:    Woodmead, Sandton          │
+│  Province:Gauteng                    │
+│  Postcode:2191                       │
+│                                      │
 │  Submitted: 01 Mar 2026 at 12:00    │
 │  SSH Fingerprint: abc123...          │
 │  IP: 196.x.x.x                      │
@@ -111,12 +118,20 @@ When admin clicks "Copy Details", the following is copied:
 
 ```
 === Swag Request #42 ===
-Name:  Sipho Mabena
-Email: sipho@example.com
-Phone: +27821234567
-Size:  L
-Note:  I built 3 apps on the Investec API this year and spoke at the community meetup!
-Status: Pending
+Name:    Sipho Mabena
+Email:   sipho@example.com
+Phone:   +27821234567
+Size:    L
+Note:    I built 3 apps on the Investec API this year and spoke at the community meetup!
+
+Delivery Address:
+Address: 19B Morris St E
+Company: CoreSync - Woodmead Willows Office Park
+City:    Woodmead, Sandton
+Province:Gauteng
+Postcode:2191
+
+Status:  Pending
 Submitted: 01 Mar 2026
 ```
 
@@ -173,14 +188,14 @@ export const useUpdateStatus = () =>
 
 ---
 
-## 7. Status Badge Colors
+## 7. Status Badge Colors (Dark Mode)
 
-| Status     | Background   | Text     | Tailwind Class                    |
-|------------|-------------|----------|-----------------------------------|
-| Pending    | Amber-100   | Amber-800| `bg-amber-100 text-amber-800`     |
-| Approved   | Green-100   | Green-800| `bg-green-100 text-green-800`     |
-| Denied     | Red-100     | Red-800  | `bg-red-100 text-red-800`         |
-| Waitlisted | Blue-100    | Blue-800 | `bg-blue-100 text-blue-800`       |
+| Status     | Border       | Background          | Tailwind Classes                                     |
+|------------|-------------|---------------------|------------------------------------------------------|
+| Pending    | Teal        | Teal/10 translucent  | `border-teal-500/30 bg-teal-500/10 text-teal-300`   |
+| Approved   | Teal        | Teal/10 translucent  | `border-teal-500/30 bg-teal-500/10 text-teal-300`   |
+| Denied     | Burgundy    | Burgundy/10          | `border-rose-500/30 bg-rose-500/10 text-rose-300`   |
+| Waitlisted | Navy 500    | Navy 700/50          | `border-navy-500/30 bg-navy-700/50 text-navy-300`   |
 
 ---
 
@@ -196,27 +211,16 @@ export const useUpdateStatus = () =>
 
 ```
 packages/admin/
-├── public/
-│   └── favicon.svg
 ├── src/
 │   ├── main.tsx              # Entry point
 │   ├── App.tsx               # Router setup
 │   ├── lib/
-│   │   ├── api.ts            # API client functions
-│   │   ├── queries.ts        # TanStack Query hooks
-│   │   └── utils.ts          # Helpers (clipboard, format)
+│   │   └── api.ts            # API client + types
 │   ├── components/
-│   │   ├── ui/               # shadcn/ui components
 │   │   ├── Header.tsx
 │   │   ├── StatsCards.tsx
-│   │   ├── RequestsTable.tsx
-│   │   ├── RequestRow.tsx
 │   │   ├── RequestDetail.tsx
-│   │   ├── AdminActions.tsx
-│   │   ├── CopyButton.tsx
-│   │   ├── StatusBadge.tsx
-│   │   ├── SearchBar.tsx
-│   │   └── Pagination.tsx
+│   │   └── StatusBadge.tsx
 │   ├── pages/
 │   │   ├── LoginPage.tsx
 │   │   └── DashboardPage.tsx
@@ -227,6 +231,7 @@ packages/admin/
 ├── index.html
 ├── vite.config.ts
 ├── tailwind.config.ts
+├── postcss.config.js
 ├── tsconfig.json
 └── package.json
 ```
