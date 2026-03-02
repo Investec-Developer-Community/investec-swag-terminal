@@ -33,7 +33,7 @@ func (m *Model) initForm() {
 				Key("fullName").
 				Title("What's your full name?").
 				Description("Step 1 of 9").
-				Placeholder("e.g. Sipho Mabena").
+				Placeholder("e.g. Ada Lovelace").
 				Validate(func(s string) error {
 					if len(strings.TrimSpace(s)) < 2 {
 						return fmt.Errorf("name must be at least 2 characters")
@@ -46,7 +46,7 @@ func (m *Model) initForm() {
 				Key("email").
 				Title("What's your email address?").
 				Description("Step 2 of 9").
-				Placeholder("e.g. sipho@example.com").
+				Placeholder("e.g. ada@example.com").
 				Validate(func(s string) error {
 					s = strings.TrimSpace(s)
 					if !strings.Contains(s, "@") || !strings.Contains(s, ".") {
@@ -88,7 +88,7 @@ func (m *Model) initForm() {
 				Key("note").
 				Title("Tell us why you deserve some swag!").
 				Description("Step 5 of 9 — Be creative!").
-				Placeholder("e.g. I built 3 apps on the Investec API...").
+				Placeholder("e.g. I built 3 apps on the Investec API and here's the link...").
 				CharLimit(500).
 				Validate(func(s string) error {
 					if len(strings.TrimSpace(s)) < 10 {
@@ -102,8 +102,8 @@ func (m *Model) initForm() {
 			huh.NewInput().
 				Key("streetAddress").
 				Title("Street address").
-				Description("Step 6 of 9 — Where should we deliver?").
-				Placeholder("e.g. 19B Morris St E").
+				Description("Step 6 of 9 — Where should we deliver? Not detailed = postal /dev/null").
+				Placeholder("e.g. 123 Bob's St E").
 				Validate(func(s string) error {
 					if len(strings.TrimSpace(s)) < 3 {
 						return fmt.Errorf("street address is required")
@@ -114,9 +114,9 @@ func (m *Model) initForm() {
 		huh.NewGroup(
 			huh.NewInput().
 				Key("company").
-				Title("Company (optional)").
+				Title("Complex or Office (optional)").
 				Description("Step 7 of 9 — Leave blank if delivering to home").
-				Placeholder("e.g. CoreSync - Woodmead Willows Office Park"),
+				Placeholder("e.g. Recursive Solutions - Sandton, Sandton offices"),
 		),
 		huh.NewGroup(
 			huh.NewInput().
