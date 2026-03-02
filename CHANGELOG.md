@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.5] — 2026-03-01
+
+### Added
+
+- Konami code easter egg on confirmation screen (↑↑↓↓←→←→BA)
+- Animated ASCII Rick Astley with karaoke lyrics scroll
+- Subtle hint text on confirm screen for discoverability
+
 ## [0.1.4] — 2026-03-01
 
 ### Changed

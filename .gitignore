@@ -8,5 +8,6 @@ data/
 bin/
 .DS_Store
 packages/ssh/bin/
+packages/ssh/main
 packages/api/data/
 packages/api/drizzle/

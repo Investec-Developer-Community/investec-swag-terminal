@@ -20,6 +20,7 @@ const (
 	submittingPage
 	confirmPage
 	errorPage
+	rickrollPage
 )
 
 // ── Form Data ──────────────────────────────────────────────────
@@ -78,6 +79,10 @@ type Model struct {
 
 	// Error
 	submitError error
+
+	// Easter egg
+	konamiBuf    []string
+	rickLyricIdx int
 }
 
 // NewModel creates the initial TUI model.
@@ -131,6 +136,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m.confirmUpdate(msg)
 	case errorPage:
 		return m.errorUpdate(msg)
+	case rickrollPage:
+		return m.rickrollUpdate(msg)
 	}
 
 	return m, nil
@@ -150,6 +157,8 @@ func (m Model) View() string {
 		return m.confirmView()
 	case errorPage:
 		return m.errorView()
+	case rickrollPage:
+		return m.rickrollView()
 	}
 	return ""
 }

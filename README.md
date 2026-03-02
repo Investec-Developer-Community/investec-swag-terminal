@@ -1,18 +1,50 @@
-# 🎁 Investec Developer Swag SSH Portal
+## ⚠️ Playground Project
 
-An SSH-based interactive terminal for the **Investec Developer Community** to request swag — plus an admin web dashboard to manage it all.
+This is **not an official Investec product**.
+
+It's a community experiment --- a playground to test a fun, SSH-native
+idea for developers in the [Investec Developer community](https://investec.gitbook.io/programmable-banking-community-wiki).
+
+If you'd like to improve it, simplify it, or make it more ridiculous (in
+a good way):
+
+PRs welcome.
+
+------------------------------------------------------------------------
+
+# 🎁 Investec Developer Swag SSH Terminal
+
+An SSH-first, ASCII-driven swag request experience for the Investec Developer Community.
+
+Provision swag. Over SSH. Because we can.
 
 ```
-ssh swag.investec.dev
+ssh localhost -p 2222
 ```
 
----
+<p align="center">
+  <img src="assets/swag_screenshot.png" width="500" alt="Investec Swag SSH Terminal" />
+</p>
+
+------------------------------------------------------------------------
+
+## What is this?
+
+A retro terminal interface powered by Go + Bubble Tea, backed by a
+modern API and admin dashboard.
+
+Developers SSH in, submit a swag request, and the DevRel team manages
+approvals via a web dashboard.
+
+Simple. Fast. Slightly over-engineered.
+
+------------------------------------------------------------------------
 
 ## How It Works
 
 | Interface | How | Tech |
 |---|---|---|
-| **SSH Terminal** | `ssh swag.investec.dev` | Go + Bubble Tea TUI |
+| **SSH Terminal** | `ssh localhost -p 2222` | Go + Bubble Tea TUI |
 | **REST API** | Backend for both interfaces | Hono.js on Bun |
 | **Admin Dashboard** | Web UI for reviewing requests | React + Tailwind |
 
@@ -212,19 +244,6 @@ Default admin credentials:
 
 ---
 
-## Spec-Driven Development
-
-This project follows a spec-first approach. All features are documented before implementation:
-
-| Spec | Description |
-|------|-------------|
-| [SPEC.md](specs/SPEC.md) | Product specification — user flows, features, data model |
-| [API_SPEC.md](specs/API_SPEC.md) | API endpoints, schema, validation, error handling |
-| [SSH_TUI_SPEC.md](specs/SSH_TUI_SPEC.md) | SSH terminal screens, keymap, theme, architecture |
-| [ADMIN_DASHBOARD_SPEC.md](specs/ADMIN_DASHBOARD_SPEC.md) | Dashboard layout, components, auth flow |
-
----
-
 ## Commands Reference
 
 | Command | Description |
@@ -259,9 +278,3 @@ This project follows a spec-first approach. All features are documented before i
 ## Inspired By
 
 [terminal.shop](https://terminal.shop) — the SSH-first e-commerce experience. This project takes the same architectural patterns (Go Bubble Tea TUI → REST API → Admin web) and applies them to a community swag request workflow.
-
----
-
-## License
-
-Private — Investec Developer Community

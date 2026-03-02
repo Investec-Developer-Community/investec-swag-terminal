@@ -45,6 +45,9 @@ func (m Model) confirmView() string {
 		}
 	}
 
+	// Subtle easter egg hint
+	hint := m.theme.TextMuted().Render("↑↑↓↓←→←→ ...you know the rest")
+
 	body := lipgloss.JoinVertical(lipgloss.Left,
 		"",
 		header,
@@ -57,6 +60,8 @@ func (m Model) confirmView() string {
 		idLine,
 		"",
 		optionLines,
+		"",
+		hint,
 		"",
 	)
 
@@ -130,7 +135,21 @@ func (m Model) errorView() string {
 func (m Model) confirmUpdate(msg tea.Msg) (Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
-		switch msg.String() {
+		key := msg.String()
+
+		// Track Konami code input
+		m.konamiBuf = append(m.konamiBuf, key)
+		if len(m.konamiBuf) > 20 {
+			m.konamiBuf = m.konamiBuf[len(m.konamiBuf)-20:]
+		}
+		if konamiCheck(m.konamiBuf) {
+			m.konamiBuf = nil
+			m.rickLyricIdx = 0
+			m.page = rickrollPage
+			return m, rickTick()
+		}
+
+		switch key {
 		case "up", "k":
 			if m.confirmSelection > 0 {
 				m.confirmSelection--
