@@ -1,5 +1,8 @@
 # Technical Specification — API & Data Layer
 
+> **Docs version:** 0.1.7 (updated 2026-03-04)  
+> See [CHANGELOG.md](../CHANGELOG.md) for release history.
+
 ## 1. Overview
 
 The API serves as the shared backend for both the SSH terminal client and the admin web dashboard. It handles swag request CRUD, status management, and admin authentication.
@@ -185,6 +188,45 @@ Response 200:
 }
 ```
 
+### 2.5 Integrations (Power Automate Phase 1)
+
+#### `GET /api/integrations/submissions` — Poll new submissions (token-protected)
+```
+Query Params:
+  ?since=2026-03-01T00:00:00.000Z   // optional cursor (ISO-8601)
+  ?limit=100                        // optional, max 500
+
+Headers:
+  x-flow-token: <POWER_AUTOMATE_FLOW_TOKEN>
+
+Response 200:
+{
+  "data": [
+    {
+      "submittedAt": "2026-03-04T10:00:00.000Z",
+      "requestId": "cuid2",
+      "status": "pending",
+      "name": "Ada Lovelace",
+      "email": "ada@example.com",
+      "company": "",
+      "githubUsername": "",
+      "shirtSize": "L",
+      "country": "South Africa",
+      "shippingAddress": "123 Bob's St E, Woodmead, Gauteng, 2191",
+      "reason": "I built 3 apps on the Investec API this year!",
+      "sourceIp": "196.x.x.x"
+    }
+  ],
+  "nextSince": "2026-03-04T10:00:00.000Z",
+  "count": 1
+}
+
+Errors:
+  401 — Missing or invalid flow token
+  422 — Invalid `since` or `limit`
+  503 — Integration token not configured on API
+```
+
 ---
 
 ## 3. Database Schema (Drizzle ORM)
@@ -332,4 +374,5 @@ SSH_HOST_KEY_PATH=./data/host_key      # SSH server host key
 SSH_PORT=2222
 API_PORT=3000
 API_URL=http://localhost:3000          # Used by SSH client
+POWER_AUTOMATE_FLOW_TOKEN=             # Shared token for polling endpoint
 ```

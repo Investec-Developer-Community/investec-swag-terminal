@@ -1,5 +1,8 @@
 # Investec Developer Swag Portal — Product Specification
 
+> **Docs version:** 0.1.7 (updated 2026-03-04)  
+> See [CHANGELOG.md](CHANGELOG.md) for release history.
+
 ## 1. Vision
 
 An SSH-based interactive terminal experience for the **Investec Developer Community** to request swag (merchandise). Community members SSH into the portal, complete a fun, guided form, and submit their request. An admin web dashboard allows the Investec team to approve, deny, or waitlist requests — with full visibility into all submissions.

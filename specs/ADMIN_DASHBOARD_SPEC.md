@@ -1,5 +1,8 @@
 # Technical Specification — Admin Web Dashboard
 
+> **Docs version:** 0.1.7 (updated 2026-03-04)  
+> See [CHANGELOG.md](../CHANGELOG.md) for release history.
+
 ## 1. Overview
 
 A React-based single-page application for the Investec DevRel team to manage swag requests. The dashboard provides a clear overview of all submissions with tools to approve, deny, or waitlist requests — plus easy copy-paste for fulfilment workflows.

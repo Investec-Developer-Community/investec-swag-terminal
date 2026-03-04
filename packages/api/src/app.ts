@@ -5,6 +5,8 @@ import { publicRequestsRouter, adminRequestsRouter } from "./routes/requests";
 import { statsRouter } from "./routes/stats";
 import { authRouter } from "./routes/auth";
 import { adminAuth } from "./middleware/auth";
+import { integrationsRouter } from "./routes/integrations";
+import apiPackage from "../package.json";
 
 export function createApp() {
   const app = new Hono();
@@ -22,13 +24,14 @@ export function createApp() {
   app.get("/", (c) =>
     c.json({
       name: "Investec Developer Swag API",
-      version: "0.1.0",
+      version: apiPackage.version,
       status: "ok",
     })
   );
 
   app.route("/api/requests", publicRequestsRouter);
   app.route("/api/auth", authRouter);
+  app.route("/api/integrations", integrationsRouter);
 
   const admin = new Hono();
   admin.use("*", adminAuth);

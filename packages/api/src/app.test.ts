@@ -5,6 +5,7 @@ import { createApp } from "./app";
 describe("API app routing and auth", () => {
   beforeEach(() => {
     process.env.JWT_SECRET = "test-jwt-secret";
+    process.env.POWER_AUTOMATE_FLOW_TOKEN = "test-flow-token";
   });
 
   test("GET / returns health payload", async () => {
@@ -74,5 +75,29 @@ describe("API app routing and auth", () => {
     expect(typeof body.approvalRate).toBe("number");
     expect(Array.isArray(body.leaderboard)).toBe(true);
     expect(body.mostRequestedSize === null || typeof body.mostRequestedSize.size === "string").toBe(true);
+  });
+
+  test("GET /api/integrations/submissions requires flow token", async () => {
+    const app = createApp();
+    const res = await app.request("/api/integrations/submissions");
+
+    expect(res.status).toBe(401);
+
+    const body = await res.json();
+    expect(body.error.code).toBe("UNAUTHORIZED");
+  });
+
+  test("GET /api/integrations/submissions rejects invalid since", async () => {
+    const app = createApp();
+    const res = await app.request("/api/integrations/submissions?since=not-a-date", {
+      headers: {
+        "x-flow-token": process.env.POWER_AUTOMATE_FLOW_TOKEN as string,
+      },
+    });
+
+    expect(res.status).toBe(422);
+
+    const body = await res.json();
+    expect(body.error.code).toBe("VALIDATION_ERROR");
   });
 });

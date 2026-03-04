@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import { eq, desc, asc, like, or, sql, count } from "drizzle-orm";
 import { verify } from "jsonwebtoken";
 import { db } from "../db";
-import { swagRequests, SHIRT_SIZES } from "../db/schema";
+import { swagRequests } from "../db/schema";
 import {
   CreateSwagRequest,
   UpdateRequestStatus,
@@ -37,6 +37,8 @@ publicRequestsRouter.post("/", async (c) => {
 
   const data = parsed.data;
 
+  const sourceIp = getSourceIp(c);
+
   const result = db
     .insert(swagRequests)
     .values({
@@ -51,7 +53,7 @@ publicRequestsRouter.post("/", async (c) => {
       province: data.province,
       postcode: data.postcode,
       fingerprint: data.fingerprint || null,
-      ipAddress: c.req.header("x-forwarded-for") || "unknown",
+      ipAddress: sourceIp,
     })
     .returning()
     .get();
@@ -285,3 +287,22 @@ function getReviewerFromToken(authHeader?: string) {
     return "admin";
   }
 }
+
+function getSourceIp(c: {
+  req: {
+    header: (name: string) => string | undefined;
+    raw: Request & { ip?: string };
+  };
+}) {
+  const forwardedFor = c.req.header("x-forwarded-for");
+  if (forwardedFor) {
+    const firstForwardedIp = forwardedFor.split(",")[0]?.trim();
+    if (firstForwardedIp) {
+      return firstForwardedIp;
+    }
+  }
+
+  const requestWithIp = c.req.raw as Request & { ip?: string };
+  return requestWithIp.ip || "unknown";
+}
+

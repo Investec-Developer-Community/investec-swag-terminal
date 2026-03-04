@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.1.7] — 2026-03-04
+
+### Added
+
+- **Terminal issue management workflow**: Verified GitHub CLI (`gh`) setup path (no Homebrew) for creating and updating repo issues from terminal
+- **New backlog issues**: Added issue set for next-phase hardening and delivery
+  - #7 CI gates for test/typecheck/build/secret scan
+  - #8 Rate limiting for public submit and admin login endpoints
+  - #9 Structured audit logging for key system events
+  - #10 Expanded automated coverage across Admin, SSH, and integration flows
+  - #11 Runtime config hardening with explicit dev/staging/prod profiles
+
+### Changed
+
+- **Issue governance structure**: Reframed the existing issue stack for clearer execution order
+  - #3 promoted to deployment epic with explicit blockers
+  - #1 and #2 marked and worded as deployment blockers
+  - #4 refined as required security work before public SSH exposure
+  - Cross-linked issue comments added to reflect blocker relationships
+- **Integration strategy locked to polling-only (Phase 1)**
+  - Removed Premium webhook branch from API submission flow
+  - Removed `POWER_AUTOMATE_WEBHOOK_URL` from env/spec docs
+  - Standardized docs and setup on `GET /api/integrations/submissions` polling path
+
 ## [0.1.6] — 2026-03-02
 
 ### Added

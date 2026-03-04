@@ -1,5 +1,8 @@
 # Technical Specification — SSH Terminal UI
 
+> **Docs version:** 0.1.7 (updated 2026-03-04)  
+> See [CHANGELOG.md](../CHANGELOG.md) for release history.
+
 ## 1. Overview
 
 The SSH terminal UI is a Go application built with **Bubble Tea** (Charmbracelet) that provides an interactive, branded swag request experience. Users SSH in, fill out a multi-step form, and submit their request — all from their terminal.

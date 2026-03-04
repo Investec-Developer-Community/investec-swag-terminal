@@ -14,6 +14,9 @@ PRs welcome.
 
 # 🎁 Investec Developer Swag SSH Terminal
 
+> **Docs version:** 0.1.7 (updated 2026-03-04)  
+> See [CHANGELOG.md](CHANGELOG.md) for release history.
+
 An SSH-first, ASCII-driven swag request experience for the Investec Developer Community.
 
 Provision swag. Over SSH. Because we can.
@@ -180,6 +183,13 @@ cp .env.example .env
 
 Edit `.env` if you need to change any defaults (ports, credentials, etc.).
 
+Optional integration:
+- **Polling-only (current):** Scheduled Flow polling
+  - Set `POWER_AUTOMATE_FLOW_TOKEN` in API `.env`
+  - Call `GET /api/integrations/submissions?since=<ISO>&limit=100` with header `x-flow-token: <token>` every 1–5 minutes
+  - Use returned `nextSince` as the next poll cursor
+  - Full setup runbook: [`specs/POWER_AUTOMATE_FLOW_SPEC.md`](specs/POWER_AUTOMATE_FLOW_SPEC.md)
+
 ### 3. Set up database
 
 ```bash
@@ -237,6 +247,7 @@ Default admin credentials:
 |------|------|-------------|
 | `POST /api/requests` | None | Submit a swag request (SSH TUI) |
 | `POST /api/auth/login` | None | Admin login |
+| `GET /api/integrations/submissions` | `x-flow-token` | Poll new submissions since timestamp (Power Automate Phase 1) |
 | `GET /api/admin/requests` | JWT | List requests (admin) |
 | `GET /api/admin/requests/:id` | JWT | Get request detail |
 | `PATCH /api/admin/requests/:id/status` | JWT | Approve/deny/waitlist |
