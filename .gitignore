@@ -1,13 +1,49 @@
 node_modules/
 dist/
+build/
+coverage/
+
+# Environment / secrets
 .env
+.env.*
+!.env.example
+
+# Databases and local state
 *.db
-*.db-journal
-*.db-wal
+*.db-*
+*.sqlite
+*.sqlite3
 data/
-bin/
+packages/api/data/
+
+# Logs / debug output
+*.log
+bun-debug.log*
+
+# OS / editor noise
 .DS_Store
+**/.DS_Store
+.idea/
+.vscode/
+
+# Go / binary outputs
+bin/
+*.out
 packages/ssh/bin/
 packages/ssh/main
-packages/api/data/
-packages/api/drizzle/
+
+# SSH keys and sensitive key material
+packages/ssh/data/
+packages/ssh/keys/
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_ecdsa
+id_ed25519
+known_hosts
+authorized_keys
+
+# Keep migrations and config tracked
+# (do not ignore packages/api/drizzle/)

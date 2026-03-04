@@ -1,4 +1,5 @@
 // ── Types ───────────────────────────────────────────────────────
+import { clearStoredToken, getStoredToken } from "./auth";
 
 export type RequestStatus = "pending" | "approved" | "denied" | "waitlisted";
 export type ShirtSize = "XS" | "S" | "M" | "L" | "XL" | "XXL";
@@ -58,7 +59,7 @@ export interface RequestFilters {
 // ── Helpers ─────────────────────────────────────────────────────
 
 function getToken(): string {
-  const token = localStorage.getItem("investec-swag-admin-token");
+  const token = getStoredToken();
   if (!token) throw new Error("Not authenticated");
   return token;
 }
@@ -72,6 +73,9 @@ function authHeaders(): HeadersInit {
 
 async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {
+    if (res.status === 401 || res.status === 403) {
+      clearStoredToken();
+    }
     const data = await res.json().catch(() => ({}));
     throw new Error(data.error?.message || `Request failed: ${res.status}`);
   }

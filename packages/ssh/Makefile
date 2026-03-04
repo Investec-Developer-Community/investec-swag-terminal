@@ -1,16 +1,18 @@
 .PHONY: build run run/live test tidy audit
 
+BINARY := bin/ssh-server
+
 ## build: Build the SSH server binary
 build:
-	go build -o bin/swag-ssh ./cmd/ssh/main.go
+	go build -o $(BINARY) ./cmd/ssh/main.go
 
 ## run: Build and run the SSH server
 run: build
-	./bin/swag-ssh
+	./$(BINARY)
 
 ## run/live: Run with live reloading (requires air)
 run/live:
-	air --build.cmd "go build -o bin/swag-ssh ./cmd/ssh/main.go" --build.bin "./bin/swag-ssh"
+	air --build.cmd "go build -o $(BINARY) ./cmd/ssh/main.go" --build.bin "./$(BINARY)"
 
 ## test: Run all tests with race detection
 test:

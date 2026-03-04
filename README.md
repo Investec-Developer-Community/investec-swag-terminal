@@ -193,8 +193,6 @@ cd packages/api && bunx drizzle-kit push && cd ../..
 cd packages/api && bun src/db/seed.ts && cd ../..
 ```
 
-> **Note:** The root `bun db:push` and `bun db:seed` scripts use `bun --cwd` which may not be supported on all Bun versions. If they fail, use the direct commands above.
-
 ### 4. Start development servers
 
 ```bash

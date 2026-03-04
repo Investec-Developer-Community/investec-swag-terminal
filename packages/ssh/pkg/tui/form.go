@@ -181,8 +181,7 @@ func (m Model) formView() string {
 	formContent := m.form.View()
 
 	// Progress bar
-	step := extractFormStep(formContent)
-	progressBar := m.renderFormProgress(step)
+	progressBar := m.renderFormProgress(m.formStep)
 
 	// Wrap in a styled container
 	container := lipgloss.NewStyle().
@@ -209,6 +208,7 @@ func (m Model) formUpdate(msg tea.Msg) (Model, tea.Cmd) {
 	form, cmd := m.form.Update(msg)
 	if f, ok := form.(*huh.Form); ok {
 		m.form = f
+		m.formStep = m.deriveFormStep()
 	}
 
 	// Check if form is complete
@@ -228,6 +228,49 @@ func (m Model) formUpdate(msg tea.Msg) (Model, tea.Cmd) {
 	}
 
 	return m, cmd
+}
+
+func (m Model) deriveFormStep() int {
+	if m.form == nil {
+		return 1
+	}
+
+	if m.form.State == huh.StateCompleted {
+		return totalFormSteps
+	}
+
+	if strings.TrimSpace(m.form.GetString("fullName")) == "" {
+		return 1
+	}
+	if strings.TrimSpace(m.form.GetString("email")) == "" {
+		return 2
+	}
+	if strings.TrimSpace(m.form.GetString("phone")) == "" {
+		return 3
+	}
+	if strings.TrimSpace(m.form.GetString("shirtSize")) == "" {
+		return 4
+	}
+	if strings.TrimSpace(m.form.GetString("note")) == "" {
+		return 5
+	}
+	if strings.TrimSpace(m.form.GetString("streetAddress")) == "" {
+		return 6
+	}
+
+	city := strings.TrimSpace(m.form.GetString("city"))
+	province := strings.TrimSpace(m.form.GetString("province"))
+	if city == "" && province == "" {
+		return 7
+	}
+	if city == "" || province == "" {
+		return 8
+	}
+	if strings.TrimSpace(m.form.GetString("postcode")) == "" {
+		return 9
+	}
+
+	return totalFormSteps
 }
 
 func min(a, b int) int {

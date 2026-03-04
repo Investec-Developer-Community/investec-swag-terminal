@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { eq, desc, asc, like, or, sql, count } from "drizzle-orm";
+import { verify } from "jsonwebtoken";
 import { db } from "../db";
 import { swagRequests, SHIRT_SIZES } from "../db/schema";
 import {
@@ -8,11 +9,12 @@ import {
   ListRequestsQuery,
 } from "../validators";
 
-export const requestsRouter = new Hono();
+export const publicRequestsRouter = new Hono();
+export const adminRequestsRouter = new Hono();
 
 // ── POST /api/requests — Submit a new swag request ─────────────
 
-requestsRouter.post("/", async (c) => {
+publicRequestsRouter.post("/", async (c) => {
   const body = await c.req.json();
   const parsed = CreateSwagRequest.safeParse(body);
 
@@ -66,7 +68,7 @@ requestsRouter.post("/", async (c) => {
 
 // ── GET /api/requests — List requests (admin) ──────────────────
 
-requestsRouter.get("/", async (c) => {
+adminRequestsRouter.get("/", async (c) => {
   const query = ListRequestsQuery.safeParse(c.req.query());
 
   if (!query.success) {
@@ -135,7 +137,7 @@ requestsRouter.get("/", async (c) => {
 
 // ── GET /api/requests/export — CSV export (admin) ──────────────
 
-requestsRouter.get("/export", async (c) => {
+adminRequestsRouter.get("/export", async (c) => {
   const statusFilter = c.req.query("status");
   const where = statusFilter
     ? eq(swagRequests.status, statusFilter as any)
@@ -186,7 +188,7 @@ requestsRouter.get("/export", async (c) => {
 
 // ── GET /api/requests/:id — Get single request (admin) ─────────
 
-requestsRouter.get("/:id", async (c) => {
+adminRequestsRouter.get("/:id", async (c) => {
   const { id } = c.req.param();
 
   const request = db
@@ -207,7 +209,7 @@ requestsRouter.get("/:id", async (c) => {
 
 // ── PATCH /api/requests/:id/status — Update status (admin) ─────
 
-requestsRouter.patch("/:id/status", async (c) => {
+adminRequestsRouter.patch("/:id/status", async (c) => {
   const { id } = c.req.param();
   const body = await c.req.json();
   const parsed = UpdateRequestStatus.safeParse(body);
@@ -246,7 +248,7 @@ requestsRouter.patch("/:id/status", async (c) => {
     .set({
       status: parsed.data.status,
       adminReason: parsed.data.reason || null,
-      reviewedBy: "admin", // TODO: extract from JWT
+      reviewedBy: getReviewerFromToken(c.req.header("Authorization")),
       reviewedAt: new Date(),
       updatedAt: new Date(),
     })
@@ -256,3 +258,25 @@ requestsRouter.patch("/:id/status", async (c) => {
 
   return c.json(updated);
 });
+
+function getReviewerFromToken(authHeader?: string) {
+  if (!authHeader?.startsWith("Bearer ")) {
+    return "admin";
+  }
+
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    return "admin";
+  }
+
+  try {
+    const decoded = verify(authHeader.slice(7), secret) as {
+      email?: string;
+      name?: string;
+      sub?: string;
+    };
+    return decoded.email || decoded.name || decoded.sub || "admin";
+  } catch {
+    return "admin";
+  }
+}

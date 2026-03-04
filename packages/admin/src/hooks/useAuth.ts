@@ -1,11 +1,25 @@
-import { useState, useCallback } from "react";
-
-const TOKEN_KEY = "investec-swag-admin-token";
+import { useState, useCallback, useEffect } from "react";
+import {
+  AUTH_CHANGED_EVENT,
+  clearStoredToken,
+  getStoredToken,
+  setStoredToken,
+} from "../lib/auth";
 
 export function useAuth() {
-  const [token, setToken] = useState<string | null>(
-    () => localStorage.getItem(TOKEN_KEY)
-  );
+  const [token, setToken] = useState<string | null>(() => getStoredToken());
+
+  useEffect(() => {
+    const syncToken = () => setToken(getStoredToken());
+
+    window.addEventListener("storage", syncToken);
+    window.addEventListener(AUTH_CHANGED_EVENT, syncToken);
+
+    return () => {
+      window.removeEventListener("storage", syncToken);
+      window.removeEventListener(AUTH_CHANGED_EVENT, syncToken);
+    };
+  }, []);
 
   const login = useCallback(async (email: string, password: string) => {
     const res = await fetch("/api/auth/login", {
@@ -20,12 +34,12 @@ export function useAuth() {
     }
 
     const { token } = await res.json();
-    localStorage.setItem(TOKEN_KEY, token);
+    setStoredToken(token);
     setToken(token);
   }, []);
 
   const logout = useCallback(() => {
-    localStorage.removeItem(TOKEN_KEY);
+    clearStoredToken();
     setToken(null);
   }, []);
 

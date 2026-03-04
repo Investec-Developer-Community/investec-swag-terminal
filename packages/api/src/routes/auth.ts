@@ -6,7 +6,13 @@ import { db } from "../db";
 import { adminUsers } from "../db/schema";
 import { AdminLogin } from "../validators";
 
-const JWT_SECRET = process.env.JWT_SECRET || "dev-secret-change-me";
+function getJwtSecret() {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error("JWT_SECRET is not configured");
+  }
+  return secret;
+}
 
 export const authRouter = new Hono();
 
@@ -56,8 +62,8 @@ authRouter.post("/login", async (c) => {
   }
 
   const token = sign(
-    { sub: user.id, email: user.email, name: user.name },
-    JWT_SECRET,
+    { sub: user.id, email: user.email, name: user.name, role: "admin" },
+    getJwtSecret(),
     { expiresIn: "24h" }
   );
 

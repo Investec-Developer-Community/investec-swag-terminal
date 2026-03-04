@@ -69,6 +69,7 @@ type Model struct {
 	// Form
 	form     *huh.Form
 	formData SwagFormData
+	formStep int
 
 	// Review screen
 	reviewSelection reviewOption
@@ -100,6 +101,7 @@ func NewModel(renderer *lipgloss.Renderer, fingerprint string, apiURL string) Mo
 		page:        splashPage,
 		fingerprint: fingerprint,
 		apiClient:   api.NewClient(apiURL),
+		formStep:    1,
 	}
 }
 

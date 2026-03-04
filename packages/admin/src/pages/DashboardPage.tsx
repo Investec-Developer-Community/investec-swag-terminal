@@ -76,6 +76,14 @@ export default function DashboardPage() {
         {/* Stats */}
         {statsQuery.data && <StatsCards stats={statsQuery.data} />}
 
+        {(statsQuery.isError || requestsQuery.isError) && (
+          <div className="mb-4 p-3 rounded border border-investec-burgundy/30 bg-investec-burgundy/10 text-sm text-red-300">
+            {(requestsQuery.error as Error)?.message ||
+              (statsQuery.error as Error)?.message ||
+              "Failed to load dashboard data. Please sign in again."}
+          </div>
+        )}
+
         {/* Toolbar */}
         <div className="flex flex-wrap items-center gap-4 mb-6">
           {/* Search */}

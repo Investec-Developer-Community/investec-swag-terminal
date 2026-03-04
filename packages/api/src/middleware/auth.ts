@@ -2,7 +2,13 @@ import { Hono } from "hono";
 import type { Context, Next } from "hono";
 import { verify } from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "dev-secret-change-me";
+function getJwtSecret() {
+  const secret = process.env.JWT_SECRET;
+  if (!secret) {
+    throw new Error("JWT_SECRET is not configured");
+  }
+  return secret;
+}
 
 /**
  * Middleware: Verify admin JWT token.
@@ -21,11 +27,20 @@ export async function adminAuth(c: Context, next: Next) {
   const token = authHeader.slice(7);
 
   try {
-    const decoded = verify(token, JWT_SECRET) as {
+    const decoded = verify(token, getJwtSecret()) as {
       sub: string;
       email: string;
       name: string;
+      role?: string;
     };
+
+    if (decoded.role !== "admin") {
+      return c.json(
+        { error: { code: "FORBIDDEN", message: "Admin access required" } },
+        403
+      );
+    }
+
     c.set("admin", decoded);
     await next();
   } catch {

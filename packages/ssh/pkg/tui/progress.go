@@ -12,17 +12,6 @@ import (
 
 const totalFormSteps = 9
 
-// extractFormStep parses the current step number from the huh form's
-// rendered view text (each field description contains "Step N of 9").
-func extractFormStep(view string) int {
-	for i := totalFormSteps; i >= 1; i-- {
-		if strings.Contains(view, fmt.Sprintf("Step %d of %d", i, totalFormSteps)) {
-			return i
-		}
-	}
-	return 1
-}
-
 // renderFormProgress draws a segmented progress bar for the form.
 func (m Model) renderFormProgress(current int) string {
 	width := m.width
