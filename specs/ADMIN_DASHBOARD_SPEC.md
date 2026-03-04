@@ -31,9 +31,9 @@ A React-based single-page application for the Investec DevRel team to manage swa
 │  ┌────┬────────────┬───────────────┬──────┬────────┬──────────┐ │
 │  │ #  │ Name       │ Email         │ Size │ Status │ Date     │ │
 │  ├────┼────────────┼───────────────┼──────┼────────┼──────────┤ │
-│  │ 42 │ Sipho M.   │ sipho@ex.com  │  L   │Pending │ 01 Mar   │ │
-│  │ 41 │ Thandi N.  │ thandi@ex.com │  M   │Approved│ 28 Feb   │ │
-│  │ 40 │ James K.   │ james@ex.com  │  XL  │Denied  │ 27 Feb   │ │
+│  │ 42 │ Ada L.     │ ada@ex.com    │  L   │Pending │ 01 Mar   │ │
+│  │ 41 │ Example B. │ userb@ex.com  │  M   │Approved│ 28 Feb   │ │
+│  │ 40 │ Example C. │ userc@ex.com  │  XL  │Denied  │ 27 Feb   │ │
 │  │ ...│ ...        │ ...           │ ...  │  ...   │ ...      │ │
 │  └────┴────────────┴───────────────┴──────┴────────┴──────────┘ │
 │                                                                  │
@@ -49,8 +49,8 @@ A React-based single-page application for the Investec DevRel team to manage swa
 │  Swag Request #42              [✕]   │
 ├──────────────────────────────────────┤
 │                                      │
-│  Name:    Sipho Mabena               │
-│  Email:   sipho@example.com          │
+│  Name:    Ada Lovelace               │
+│  Email:   ada@example.com            │
 │  Phone:   +27821234567               │
 │  Size:    L                          │
 │  Status:  ● Pending                  │
@@ -61,8 +61,8 @@ A React-based single-page application for the Investec DevRel team to manage swa
 │   community meetup in JHB!"         │
 │                                      │
 │  ── Delivery Address ──              │
-│  Address: 19B Morris St E            │
-│  Company: CoreSync - Woodmead       │
+│  Address: 123 Bob's Place Street E   │
+│  Company: Recursive - Office Street  │
 │  City:    Woodmead, Sandton          │
 │  Province:Gauteng                    │
 │  Postcode:2191                       │
@@ -97,7 +97,9 @@ A React-based single-page application for the Investec DevRel team to manage swa
 - Redirects to dashboard on success
 
 ### 3.2 Dashboard (`/`)
-- Stats cards (pending, approved, denied, waitlisted counts)
+- Stats cards (total requests, approval rate, most requested size, last 7 days)
+- Summary row (pending, approved, denied, waitlisted)
+- Optional leaderboard for top “why I deserve swag” reasons
 - Requests table with pagination, sorting, filtering
 - Click row → opens detail panel
 - Search bar for name/email
@@ -118,15 +120,15 @@ When admin clicks "Copy Details", the following is copied:
 
 ```
 === Swag Request #42 ===
-Name:    Sipho Mabena
-Email:   sipho@example.com
+Name:    Ada Lovelace
+Email:   ada@example.com
 Phone:   +27821234567
 Size:    L
 Note:    I built 3 apps on the Investec API this year and spoke at the community meetup!
 
 Delivery Address:
-Address: 19B Morris St E
-Company: CoreSync - Woodmead Willows Office Park
+Address: 123 Bob's Place Street E
+Company: Recursive - Office Street, Office Park
 City:    Woodmead, Sandton
 Province:Gauteng
 Postcode:2191

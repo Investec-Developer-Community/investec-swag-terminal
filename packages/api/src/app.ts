@@ -37,7 +37,10 @@ export function createApp() {
   app.route("/api/admin", admin);
 
   app.onError((err, c) => {
-    console.error("Unhandled error:", err);
+    console.error("Unhandled error:", err instanceof Error ? err.message : String(err));
+    if (process.env.NODE_ENV !== "production" && err instanceof Error && err.stack) {
+      console.error(err.stack);
+    }
     return c.json(
       {
         error: {

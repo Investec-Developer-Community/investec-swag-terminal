@@ -8,6 +8,7 @@ import {
   UpdateRequestStatus,
   ListRequestsQuery,
 } from "../validators";
+import { invalidateStatsCache } from "./stats";
 
 export const publicRequestsRouter = new Hono();
 export const adminRequestsRouter = new Hono();
@@ -54,6 +55,8 @@ publicRequestsRouter.post("/", async (c) => {
     })
     .returning()
     .get();
+
+  invalidateStatsCache();
 
   return c.json(
     {
@@ -255,6 +258,8 @@ adminRequestsRouter.patch("/:id/status", async (c) => {
     .where(eq(swagRequests.id, id))
     .returning()
     .get();
+
+  invalidateStatsCache();
 
   return c.json(updated);
 });

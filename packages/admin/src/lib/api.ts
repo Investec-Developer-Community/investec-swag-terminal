@@ -45,6 +45,15 @@ export interface StatsResponse {
   bySize: Record<ShirtSize, number>;
   last7Days: number;
   last30Days: number;
+  approvalRate: number;
+  mostRequestedSize: { size: ShirtSize; count: number } | null;
+  leaderboard: Array<{
+    id: string;
+    fullName: string;
+    status: RequestStatus;
+    note: string;
+    createdAt: string;
+  }>;
 }
 
 export interface RequestFilters {

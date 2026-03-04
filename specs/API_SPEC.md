@@ -50,7 +50,7 @@ Errors:
 ```
 Query Params:
   ?status=pending|approved|denied|waitlisted
-  ?search=sipho
+  ?search=ada
   ?page=1&limit=20
   ?sort=createdAt&order=desc
 
@@ -76,13 +76,13 @@ Headers:
 Response 200:
 {
   "id": "cuid2",
-  "fullName": "Sipho Mabena",
-  "email": "sipho@example.com",
+  "fullName": "Ada Lovelace",
+  "email": "ada@example.com",
   "phone": "+27821234567",
   "shirtSize": "L",
   "note": "I built 3 apps on the Investec API this year!",
-  "streetAddress": "19B Morris St E",
-  "company": "CoreSync - Woodmead Willows Office Park",
+  "streetAddress": "123 Bob's Place Street E",
+  "company": "Recursive - Office Street, Office Park",
   "city": "Woodmead, Sandton",
   "province": "Gauteng",
   "postcode": "2191",
@@ -132,11 +132,25 @@ Response 200:
   "approved": 72,
   "denied": 15,
   "waitlisted": 10,
+  "approvalRate": 82.8,
+  "mostRequestedSize": {
+    "size": "M",
+    "count": 45
+  },
   "bySize": {
     "XS": 5, "S": 20, "M": 45, "L": 40, "XL": 22, "XXL": 10
   },
   "last7Days": 28,
-  "last30Days": 89
+  "last30Days": 89,
+  "leaderboard": [
+    {
+      "id": "cuid2",
+      "fullName": "Ada Lovelace",
+      "status": "pending",
+      "note": "I built 3 apps on the Investec API this year...",
+      "createdAt": "2026-03-01T12:00:00Z"
+    }
+  ]
 }
 ```
 

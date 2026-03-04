@@ -38,7 +38,7 @@ describe("API app routing and auth", () => {
   test("GET /api/admin/requests rejects non-admin token", async () => {
     const app = createApp();
     const token = sign(
-      { sub: "user-1", email: "user@example.com", name: "User", role: "viewer" },
+      { sub: "user-1", email: "ada@example.com", name: "Ada Lovelace", role: "viewer" },
       process.env.JWT_SECRET as string
     );
 
@@ -52,5 +52,27 @@ describe("API app routing and auth", () => {
 
     const body = await res.json();
     expect(body.error.code).toBe("FORBIDDEN");
+  });
+
+  test("GET /api/admin/stats returns enhanced aggregate payload", async () => {
+    const app = createApp();
+    const token = sign(
+      { sub: "admin-1", email: "ada@example.com", name: "Ada Lovelace", role: "admin" },
+      process.env.JWT_SECRET as string
+    );
+
+    const res = await app.request("/api/admin/stats", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    expect(res.status).toBe(200);
+
+    const body = await res.json();
+    expect(typeof body.total).toBe("number");
+    expect(typeof body.approvalRate).toBe("number");
+    expect(Array.isArray(body.leaderboard)).toBe(true);
+    expect(body.mostRequestedSize === null || typeof body.mostRequestedSize.size === "string").toBe(true);
   });
 });
