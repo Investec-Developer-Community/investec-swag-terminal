@@ -48,3 +48,9 @@ authorized_keys
 
 # Keep migrations and config tracked
 # (do not ignore packages/api/drizzle/)
+
+# Local working notes
+backlog.md
+
+# Local Copilot skills (never commit)
+.github/skills/

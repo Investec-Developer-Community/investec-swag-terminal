@@ -87,8 +87,8 @@ A developer SSHs in, fills out a quick form (name, email, phone, shirt size, why
 
 ```
 investec-swag-ssh/
-├── specs/                    # Product & technical specifications
-│   ├── SPEC.md               # Product specification
+├── SPEC.md                   # Product specification (root)
+├── specs/
 │   ├── API_SPEC.md           # API & data layer spec
 │   ├── SSH_TUI_SPEC.md       # SSH terminal UI spec
 │   └── ADMIN_DASHBOARD_SPEC.md  # Admin web dashboard spec

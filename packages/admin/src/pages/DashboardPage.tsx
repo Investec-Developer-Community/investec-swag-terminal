@@ -27,6 +27,7 @@ export default function DashboardPage() {
     sort: "createdAt",
     order: "desc",
   });
+  const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [selectedRequest, setSelectedRequest] = useState<SwagRequest | null>(null);
 
@@ -37,7 +38,7 @@ export default function DashboardPage() {
   });
 
   const requestsQuery = useQuery({
-    queryKey: ["requests", filters],
+    queryKey: ["requests", filters, search],
     queryFn: () => fetchRequests({ ...filters, search: search || undefined }),
   });
 
@@ -60,8 +61,8 @@ export default function DashboardPage() {
   });
 
   const handleSearch = () => {
+    setSearch(searchInput.trim());
     setFilters((f) => ({ ...f, page: 1 }));
-    queryClient.invalidateQueries({ queryKey: ["requests"] });
   };
 
   const handleStatusFilter = (status: RequestStatus | undefined) => {
@@ -91,8 +92,8 @@ export default function DashboardPage() {
             <input
               type="text"
               placeholder="Search by name or email…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               className="w-full px-4 py-2 bg-investec-navy-800 border border-investec-navy-700 rounded text-sm text-white placeholder-investec-navy-500 focus:ring-1 focus:ring-investec-teal focus:border-investec-teal outline-none"
             />

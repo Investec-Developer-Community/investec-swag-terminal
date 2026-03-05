@@ -25,6 +25,31 @@ var saProvinces = []string{
 	"Western Cape",
 }
 
+var shirtSizeLabels = map[string]string{
+	"XS":  "XS — Extra Small",
+	"S":   "S  — Small",
+	"M":   "M  — Medium",
+	"L":   "L  — Large",
+	"XL":  "XL — Extra Large",
+	"XXL": "XXL — Double XL",
+}
+
+func shirtSizeOptions() []huh.Option[string] {
+	options := make([]huh.Option[string], 0, len(shirtSizes))
+	for _, size := range shirtSizes {
+		options = append(options, huh.NewOption(shirtSizeLabels[size], size))
+	}
+	return options
+}
+
+func provinceOptions() []huh.Option[string] {
+	options := make([]huh.Option[string], 0, len(saProvinces))
+	for _, province := range saProvinces {
+		options = append(options, huh.NewOption(province, province))
+	}
+	return options
+}
+
 // initForm creates the Huh form for swag request input.
 func (m *Model) initForm() {
 	m.form = huh.NewForm(
@@ -74,14 +99,7 @@ func (m *Model) initForm() {
 				Key("shirtSize").
 				Title("Pick your shirt size").
 				Description("Step 4 of 9").
-				Options(
-					huh.NewOption("XS — Extra Small", "XS"),
-					huh.NewOption("S  — Small", "S"),
-					huh.NewOption("M  — Medium", "M"),
-					huh.NewOption("L  — Large", "L"),
-					huh.NewOption("XL — Extra Large", "XL"),
-					huh.NewOption("XXL — Double XL", "XXL"),
-				),
+				Options(shirtSizeOptions()...),
 		),
 		huh.NewGroup(
 			huh.NewText().
@@ -133,17 +151,7 @@ func (m *Model) initForm() {
 			huh.NewSelect[string]().
 				Key("province").
 				Title("Province").
-				Options(
-					huh.NewOption("Eastern Cape", "Eastern Cape"),
-					huh.NewOption("Free State", "Free State"),
-					huh.NewOption("Gauteng", "Gauteng"),
-					huh.NewOption("KwaZulu-Natal", "KwaZulu-Natal"),
-					huh.NewOption("Limpopo", "Limpopo"),
-					huh.NewOption("Mpumalanga", "Mpumalanga"),
-					huh.NewOption("Northern Cape", "Northern Cape"),
-					huh.NewOption("North West", "North West"),
-					huh.NewOption("Western Cape", "Western Cape"),
-				),
+				Options(provinceOptions()...),
 		),
 		huh.NewGroup(
 			huh.NewInput().

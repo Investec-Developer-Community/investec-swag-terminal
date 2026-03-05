@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-	"crypto/md5"
-	"encoding/hex"
 	"errors"
 	"log/slog"
 	"net"
@@ -64,8 +62,7 @@ func main() {
 		),
 		// Accept all SSH connections — capture fingerprint for dedup
 		wish.WithPublicKeyAuth(func(ctx ssh.Context, key ssh.PublicKey) bool {
-			hash := md5.Sum(key.Marshal())
-			fingerprint := hex.EncodeToString(hash[:])
+			fingerprint := gossh.FingerprintSHA256(key)
 			ctx.SetValue("fingerprint", fingerprint)
 			return true
 		}),

@@ -1,6 +1,5 @@
 import { Hono } from "hono";
 import { eq, desc, asc, like, or, sql, count } from "drizzle-orm";
-import { verify } from "jsonwebtoken";
 import { db } from "../db";
 import { swagRequests } from "../db/schema";
 import {
@@ -253,7 +252,7 @@ adminRequestsRouter.patch("/:id/status", async (c) => {
     .set({
       status: parsed.data.status,
       adminReason: parsed.data.reason || null,
-      reviewedBy: getReviewerFromToken(c.req.header("Authorization")),
+      reviewedBy: getReviewerFromContext(c),
       reviewedAt: new Date(),
       updatedAt: new Date(),
     })
@@ -266,26 +265,16 @@ adminRequestsRouter.patch("/:id/status", async (c) => {
   return c.json(updated);
 });
 
-function getReviewerFromToken(authHeader?: string) {
-  if (!authHeader?.startsWith("Bearer ")) {
-    return "admin";
-  }
+function getReviewerFromContext(c: { get: (key: string) => unknown }) {
+  const admin = c.get("admin") as
+    | {
+        email?: string;
+        name?: string;
+        sub?: string;
+      }
+    | undefined;
 
-  const secret = process.env.JWT_SECRET;
-  if (!secret) {
-    return "admin";
-  }
-
-  try {
-    const decoded = verify(authHeader.slice(7), secret) as {
-      email?: string;
-      name?: string;
-      sub?: string;
-    };
-    return decoded.email || decoded.name || decoded.sub || "admin";
-  } catch {
-    return "admin";
-  }
+  return admin?.email || admin?.name || admin?.sub || "admin";
 }
 
 function getSourceIp(c: {

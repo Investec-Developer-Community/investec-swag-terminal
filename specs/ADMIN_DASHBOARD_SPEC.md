@@ -11,7 +11,7 @@ A React-based single-page application for the Investec DevRel team to manage swa
 **Styling:** Tailwind CSS  
 **State Management:** TanStack Query (React Query)  
 **Routing:** React Router  
-**UI Components:** shadcn/ui  
+**UI Components:** Custom React components + Tailwind utility classes  
 
 ---
 
@@ -29,7 +29,7 @@ A React-based single-page application for the Investec DevRel team to manage swa
 │  │Pending│ │Apprvd│ │Denied│ │ Wait │                           │
 │  └──────┘ └──────┘ └──────┘ └──────┘                           │
 │                                                                  │
-│  [Search: ________] [Status ▼] [Size ▼] [Export CSV]            │
+│  [Search: ________] [Status ▼] [Export CSV]                     │
 │                                                                  │
 │  ┌────┬────────────┬───────────────┬──────┬────────┬──────────┐ │
 │  │ #  │ Name       │ Email         │ Size │ Status │ Date     │ │
@@ -128,15 +128,8 @@ Email:   ada@example.com
 Phone:   +27821234567
 Size:    L
 Note:    I built 3 apps on the Investec API this year and spoke at the community meetup!
-
-Delivery Address:
-Address: 123 Bob's Place Street E
-Company: Recursive - Office Street, Office Park
-City:    Woodmead, Sandton
-Province:Gauteng
-Postcode:2191
-
-Status:  Pending
+Address: 123 Bob's Place Street E, Recursive - Office Street, Office Park, Woodmead, Sandton, Gauteng, 2191
+Status:  pending
 Submitted: 01 Mar 2026
 ```
 
@@ -148,22 +141,16 @@ This makes it easy to paste into CRM, Slack, email, or fulfilment systems.
 
 ```
 App
-├── AuthProvider
+├── ProtectedRoute (uses useAuth hook)
 │   ├── LoginPage
-│   └── ProtectedRoute
-│       └── DashboardLayout
-│           ├── Header (logo, user info, logout)
-│           ├── StatsCards
-│           ├── RequestsToolbar (search, filters, export)
-│           ├── RequestsTable
-│           │   └── RequestRow (clickable)
-│           ├── Pagination
-│           └── RequestDetailPanel (slide-over)
-│               ├── RequestInfo
-│               ├── CopyButton
-│               └── AdminActions
-│                   ├── ReasonInput
-│                   └── ActionButtons
+│   └── DashboardPage
+│       ├── Header
+│       ├── StatsCards
+│       │   ├── StatsOverviewCards
+│       │   └── StatsLeaderboard
+│       ├── Toolbar (search, status filter, export)
+│       ├── Requests table + pagination
+│       └── RequestDetail (slide-over panel)
 ```
 
 ---
@@ -207,7 +194,7 @@ export const useUpdateStatus = () =>
 ## 8. Responsive Considerations
 
 - Primary target: Desktop (1280px+)
-- Table collapses to card layout below 768px (nice-to-have)
+- Mobile card layout is not implemented yet (table remains horizontal with panel adapting to full-width)
 - Detail panel is full-screen on mobile (nice-to-have)
 
 ---
