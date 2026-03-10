@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.1.8] — 2026-03-05
+
+### Added
+
+- **API write-path coverage expansion**: Added tests for public submission creation and admin status updates (including reviewer attribution) in `packages/api/src/app.test.ts`
+
+### Changed
+
+- **Docs/spec alignment pass**: Synced README and specs with implemented architecture and behavior
+  - Corrected product spec location reference in `README.md`
+  - Updated admin dashboard spec to match real component structure and current UI behavior (`specs/ADMIN_DASHBOARD_SPEC.md`)
+  - Aligned API schema constant names and rate-limit wording with current implementation (`specs/API_SPEC.md`)
+- **Admin reviewer attribution refactor**: Status updates now reuse verified middleware claims instead of re-decoding JWT in route handlers (`packages/api/src/routes/requests.ts`)
+- **API runtime path hardening**: Improved SQLite path resolution and ensured DB directory creation before startup (`packages/api/src/db/index.ts`)
+- **SSH runtime updates**:
+  - Switched fingerprint capture to SSH SHA256 fingerprinting in server auth flow (`packages/ssh/cmd/ssh/main.go`)
+  - Refactored TUI form option generation for shirt sizes and provinces (`packages/ssh/pkg/tui/form.go`)
+  - Updated splash version string to `0.1.7` (`packages/ssh/pkg/tui/splash.go`)
+- **Admin UX/input handling refinement**: Updated dashboard search input/query behavior and improved login error typing (`packages/admin/src/pages/DashboardPage.tsx`, `packages/admin/src/pages/LoginPage.tsx`)
+- **Local-only file hygiene**: Added ignore rules for local notes/skills artifacts in `.gitignore`
+
 ## [0.1.7] — 2026-03-04
 
 ### Added

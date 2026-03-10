@@ -1,6 +1,6 @@
 # Investec Developer Swag Portal — Product Specification
 
-> **Docs version:** 0.1.7 (updated 2026-03-04)  
+> **Docs version:** 0.1.8 (updated 2026-03-05)  
 > See [CHANGELOG.md](CHANGELOG.md) for release history.
 
 ## 1. Vision
