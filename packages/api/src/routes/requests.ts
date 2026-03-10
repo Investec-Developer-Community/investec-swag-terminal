@@ -12,6 +12,72 @@ import { invalidateStatsCache } from "./stats";
 export const publicRequestsRouter = new Hono();
 export const adminRequestsRouter = new Hono();
 
+const VALIDATION_ERROR_CODE = "VALIDATION_ERROR";
+const INVALID_REQUEST_DATA_MSG = "Invalid request data";
+const INVALID_QUERY_PARAMS_MSG = "Invalid query params";
+const INVALID_STATUS_UPDATE_MSG = "Invalid status update";
+const REQUEST_NOT_FOUND_MSG = "Request not found";
+
+function toIssueDetails(issues: Array<{ path: Array<string | number>; message: string }>) {
+  return issues.map((issue) => ({
+    field: issue.path.join("."),
+    message: issue.message,
+  }));
+}
+
+function validationErrorResponse(
+  c: { json: (body: unknown, status: number) => Response },
+  message: string,
+  issues?: Array<{ path: Array<string | number>; message: string }>
+) {
+  return c.json(
+    {
+      error: {
+        code: VALIDATION_ERROR_CODE,
+        message,
+        ...(issues ? { details: toIssueDetails(issues) } : {}),
+      },
+    },
+    422
+  );
+}
+
+function requestNotFoundResponse(c: { json: (body: unknown, status: number) => Response }) {
+  return c.json(
+    { error: { code: "NOT_FOUND", message: REQUEST_NOT_FOUND_MSG } },
+    404
+  );
+}
+
+function buildListWhereClause(status?: string, search?: string) {
+  const conditions = [];
+
+  if (status) {
+    conditions.push(eq(swagRequests.status, status as any));
+  }
+
+  if (search) {
+    conditions.push(
+      or(
+        like(swagRequests.fullName, `%${search}%`),
+        like(swagRequests.email, `%${search}%`)
+      )
+    );
+  }
+
+  return conditions.length > 0 ? sql`${sql.join(conditions, sql` AND `)}` : undefined;
+}
+
+function getSortColumn(sort: "createdAt" | "fullName" | "status") {
+  if (sort === "fullName") return swagRequests.fullName;
+  if (sort === "status") return swagRequests.status;
+  return swagRequests.createdAt;
+}
+
+function escapeCsvValue(value: string | null | undefined) {
+  return `"${(value || "").replace(/"/g, '""')}"`;
+}
+
 // ── POST /api/requests — Submit a new swag request ─────────────
 
 publicRequestsRouter.post("/", async (c) => {
@@ -19,19 +85,7 @@ publicRequestsRouter.post("/", async (c) => {
   const parsed = CreateSwagRequest.safeParse(body);
 
   if (!parsed.success) {
-    return c.json(
-      {
-        error: {
-          code: "VALIDATION_ERROR",
-          message: "Invalid request data",
-          details: parsed.error.issues.map((i) => ({
-            field: i.path.join("."),
-            message: i.message,
-          })),
-        },
-      },
-      422
-    );
+    return validationErrorResponse(c, INVALID_REQUEST_DATA_MSG, parsed.error.issues);
   }
 
   const data = parsed.data;
@@ -76,38 +130,16 @@ adminRequestsRouter.get("/", async (c) => {
   const query = ListRequestsQuery.safeParse(c.req.query());
 
   if (!query.success) {
-    return c.json(
-      { error: { code: "VALIDATION_ERROR", message: "Invalid query params" } },
-      422
-    );
+    return validationErrorResponse(c, INVALID_QUERY_PARAMS_MSG);
   }
 
   const { status, search, page, limit, sort, order } = query.data;
   const offset = (page - 1) * limit;
 
-  // Build conditions
-  const conditions = [];
-  if (status) {
-    conditions.push(eq(swagRequests.status, status));
-  }
-  if (search) {
-    conditions.push(
-      or(
-        like(swagRequests.fullName, `%${search}%`),
-        like(swagRequests.email, `%${search}%`)
-      )
-    );
-  }
-
-  const where = conditions.length > 0 ? sql`${sql.join(conditions, sql` AND `)}` : undefined;
+  const where = buildListWhereClause(status, search);
 
   // Sort direction
-  const sortCol =
-    sort === "fullName"
-      ? swagRequests.fullName
-      : sort === "status"
-      ? swagRequests.status
-      : swagRequests.createdAt;
+  const sortCol = getSortColumn(sort);
   const orderFn = order === "asc" ? asc : desc;
 
   // Query
@@ -170,7 +202,7 @@ adminRequestsRouter.get("/export", async (c) => {
       r.email,
       r.phone,
       r.shirtSize,
-      `"${(r.note || "").replace(/"/g, '""')}"`,
+      escapeCsvValue(r.note),
       r.status,
       r.adminReason || "",
       r.reviewedBy || "",
@@ -202,10 +234,7 @@ adminRequestsRouter.get("/:id", async (c) => {
     .get();
 
   if (!request) {
-    return c.json(
-      { error: { code: "NOT_FOUND", message: "Request not found" } },
-      404
-    );
+    return requestNotFoundResponse(c);
   }
 
   return c.json(request);
@@ -219,19 +248,7 @@ adminRequestsRouter.patch("/:id/status", async (c) => {
   const parsed = UpdateRequestStatus.safeParse(body);
 
   if (!parsed.success) {
-    return c.json(
-      {
-        error: {
-          code: "VALIDATION_ERROR",
-          message: "Invalid status update",
-          details: parsed.error.issues.map((i) => ({
-            field: i.path.join("."),
-            message: i.message,
-          })),
-        },
-      },
-      422
-    );
+    return validationErrorResponse(c, INVALID_STATUS_UPDATE_MSG, parsed.error.issues);
   }
 
   const existing = db
@@ -241,10 +258,7 @@ adminRequestsRouter.patch("/:id/status", async (c) => {
     .get();
 
   if (!existing) {
-    return c.json(
-      { error: { code: "NOT_FOUND", message: "Request not found" } },
-      404
-    );
+    return requestNotFoundResponse(c);
   }
 
   const updated = db

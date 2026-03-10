@@ -14,7 +14,7 @@ PRs welcome.
 
 # 🎁 Investec Developer Swag SSH Terminal
 
-> **Docs version:** 0.1.8 (updated 2026-03-05)  
+> **Docs version:** 0.1.9 (updated 2026-03-10)  
 > See [CHANGELOG.md](CHANGELOG.md) for release history.
 
 An SSH-first, ASCII-driven swag request experience for the Investec Developer Community.

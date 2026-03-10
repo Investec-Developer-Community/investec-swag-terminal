@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.9] — 2026-03-10
+
+### Changed
+
+- **API route refactor (no behavior change)**: Simplified `packages/api/src/routes/requests.ts` by extracting reusable helpers for validation error payloads, request-not-found responses, list query clause construction, sort-column selection, and CSV escaping. This reduces duplication and improves maintainability while preserving existing endpoint behavior.
+- **Version sync to 0.1.9**: Updated docs version headers in `README.md`, `SPEC.md`, and all files in `specs/`; bumped runtime-visible SSH splash version in `packages/ssh/pkg/tui/splash.go`; aligned package versions in `packages/api/package.json` and `packages/admin/package.json`.
+
 ## [0.1.8] — 2026-03-05
 
 ### Added
